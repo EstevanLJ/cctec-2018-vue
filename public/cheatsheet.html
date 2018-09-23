@@ -1,0 +1,135 @@
+<html>
+
+<head>
+    <title>Cheatsheet Vue.js</title>
+
+    <style>
+        .box {
+            height: 30px;
+            width: 30px;
+            border: 1px solid black;
+            display: inline-block;
+        }
+
+        .box.red {
+            background-color: red;
+        }
+
+        
+        .box.blue {
+            background-color: blue;
+        }
+    
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+
+        <h2>1. Exibindo uma variável</h2>
+        <p>{{mensagem}}</p>
+
+        <h2>2. Lista</h2>
+        <ul>
+            <li v-for="item in lista">{{ item }}</li>
+        </ul>
+
+        <h2>3. Renderizacao condicional</h2>
+
+        <h3>3.1. v-show</h3>
+        <p v-show="aparecer">Estou aqui! (Show)</p>
+
+        <h3>3.2. v-if/v-else</h3>
+        <p v-if="aparecer">Estou aqui! (If)</p>
+        <p v-else>Não estava, agora estou! (If)</p>
+
+        <h2>4. Entradas</h2>
+
+        <h3>4.1. Botões</h3>
+        <button v-on:click="dizerOi">Clique aqui!</button>
+        
+        <h3>4.2. Inputs</h3>
+        <input type="text" v-model="entrada">
+        <p>Foi escrito: {{ entrada }}</p>
+
+        <h3>4.3. Formatar entrada</h3>
+        <p>Tudo maiusculo: {{ entradaMaiuscula }}</p>
+
+        <h2>5. CSS</h2>
+
+        <h3>5.1. Classes</h3>
+        <div class="box" v-on:click="caixa1 = !caixa1" v-bind:class="{red: caixa1}"></div>
+        <div class="box" v-on:click="caixa2 = !caixa2" v-bind:class="{blue: caixa2}"></div>
+
+        <h2>6. Componentes</h2>
+
+        <h3>6.1. Componente básico</h3>
+        <componente-basico></componente-basico>
+
+        <h3>6.2. Props</h3>
+        <componente-props v-bind:mensagem="entrada"></componente-props>
+        
+        <h3>6.3. Variaveis</h3>
+        <componente-variaveis></componente-variaveis>
+
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+    <script>
+
+        Vue.component('componente-basico', {
+            template: '<p style="font-weight: bold">Sou um simples componente!</p>'
+        })
+
+        Vue.component('componente-props', {
+            props: ['mensagem'],
+            template: '<p style="font-weight: bold">{{ mensagem }}</p>'
+        })
+
+        Vue.component('componente-variaveis', {
+            template: '<p style="font-weight: bold">{{ mensagem }}</p>',
+            data () {
+                return {
+                    mensagem: 'Componente com variaveis proprias!'
+                }
+            }
+        })
+
+        //Inicia uma instância do Vue
+        let vue = new Vue({
+            el: '#app',
+
+            data: {
+                mensagem: 'CCETC - 2018',
+                lista: ['Vue.js', 'é', 'muito', 'facil!'],
+                aparecer: true,
+                entrada: 'Valor inicial',
+                caixa1: true,
+                caixa2: false
+            },
+
+            methods: {
+                dizerOi() {
+                    console.log('oi')
+                }
+            },
+
+            computed: {
+                entradaMaiuscula() {
+                    return this.entrada.toUpperCase()
+                }
+            },
+
+            mounted() {
+                console.log('Vue iniciado!')
+            }
+
+        })
+        
+    </script>
+
+</body>
+
+</html>
