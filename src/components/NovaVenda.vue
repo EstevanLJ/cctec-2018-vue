@@ -5,6 +5,17 @@
                 Nova venda
             </h1>
             <hr>
+
+            <article class="message is-success" v-if="exibir_mensagem_sucesso">
+                <div class="message-header">
+                    <p>Sucesso!</p>
+                    <button class="delete" aria-label="delete" @click="exibir_mensagem_sucesso = false"></button>
+                </div>
+                <div class="message-body">
+                    Venda inserida, ID: <strong>{{ id_inserido }}</strong>
+                </div>
+            </article>
+
             <div class="field">
                 <label class="label">Nome do cliente</label>
                 <div class="control">
@@ -62,7 +73,7 @@
             
             <br>
 
-            <h4 class="title is-4">Produtos - 2 itens</h4>
+            <h4 class="title is-4">Produtos {{quantidades_itens_venda}}</h4>
             <table class="table is-bordered is-fullwidth is-hoverable">
                 <thead>
                     <tr>
@@ -101,7 +112,7 @@
 
             <hr>
             <div>
-                <button class="button is-link is-pulled-right">Salvar</button>
+                <button class="button is-link is-pulled-right" :class="{'is-loading': enviando}" @click="salvarVenda">Salvar</button>
             </div>
             
         </div>
@@ -118,22 +129,16 @@ export default {
         quantidade: 0,
         valor_unitario: 0
       },
-      produtos: [
-        {
-          id: 1,
-          nome: "Coca-cola"
-        },
-        {
-          id: 2,
-          nome: "Fruki Guaraná"
-        },
-        {
-          id: 3,
-          nome: "Fruki Limão"
-        }
-      ],
-      produtos_venda: []
+      produtos: [],
+      produtos_venda: [],
+      enviando: false,
+      exibir_mensagem_sucesso: false,
+      id_inserido: null
     };
+  },
+
+  mounted() {
+      this.buscarProdutos()
   },
 
   methods: {
@@ -152,10 +157,37 @@ export default {
         this.produtos_venda.splice(index, 1)
     },
 
+    buscarProdutos() {
+        axios.get(api_url + '/produtos').then((res) => {
+            this.produtos = res.data.produtos
+        })
+    },
+
     salvarVenda() {
-        console.log({
+        let dados = {
             nome_cliente: this.nome_cliente,
-            produtos: this.produtos
+            produtos: JSON.stringify(this.produtos_venda)
+        }
+
+        this.enviando = true
+
+        axios.post(api_url + '/vendas', dados).then((res) => {
+
+            this.enviando = false
+
+            //Limpa as variaveis
+            this.nome_cliente = ''
+            this.produtos_venda = []
+            this.novo_produto.produto_id = null;
+            this.novo_produto.quantidade = 0;
+            this.novo_produto.valor_unitario = 0;
+
+            //Apresenta mensagem de sucesso            
+            this.id_inserido = res.data.venda_id
+            this.exibir_mensagem_sucesso = true
+
+        }).catch((err) => {
+            this.enviando = false
         })
     }
   },
@@ -170,7 +202,17 @@ export default {
     },
 
     quantidade_total_venda() {
-        return this.produtos_venda.length
+        return this.produtos_venda.reduce((carry, venda) => carry + parseInt(venda.quantidade), 0)
+    },
+
+    quantidades_itens_venda() {
+        if(this.produtos_venda.length <= 0) {
+            return ''
+        } else if (this.produtos_venda.length == 1) {
+            return '- 1 item'
+        } else {
+            return '- ' + this.produtos_venda.length + ' itens'
+        }
     }
   }
 };
