@@ -45,7 +45,10 @@
                     <div class="field">
                         <label class="label">Quantidade</label>
                         <div class="control">
-                            <input class="input" type="text" v-model="novo_produto.quantidade" placeholder="Quantidade">
+                            <input class="input" type="text" 
+                            v-model="novo_produto.quantidade"
+                            @focus="$event.target.select()" 
+                            placeholder="Quantidade">
                         </div>
                     </div>
                 </div>
@@ -53,7 +56,10 @@
                     <div class="field">
                         <label class="label">Valor por unidade</label>
                         <div class="control">
-                            <input class="input" type="text" v-model="novo_produto.valor_unitario" placeholder="Valor p/ un.">
+                            <input class="input" type="text" 
+                            v-model="novo_produto.valor_unitario" 
+                            @focus="$event.target.select()"
+                            placeholder="Valor p/ un.">
                         </div>
                     </div>
                 </div>
@@ -154,7 +160,9 @@ export default {
     },
     
     removerProdutoVenda(index) {
-        this.produtos_venda.splice(index, 1)
+        if(confirm('Tem certeza que deseja remover o produto?')) {
+            this.produtos_venda.splice(index, 1)
+        }
     },
 
     buscarProdutos() {
